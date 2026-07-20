@@ -10,6 +10,10 @@ from garden_market.cli import demo_state
 from garden_market.storage import load_state, save_state
 from garden_market.models import generate_short_id
 from garden_market.validation import normalize_tags, require_text, validate_task_status
+from garden_market.services import (
+    create_note,
+    list_notes,
+)
 
 
 class ProjectSmokeTests(unittest.TestCase):
@@ -57,6 +61,14 @@ class ProjectSmokeTests(unittest.TestCase):
         self.assertEqual(validate_task_status("todo"), "todo")
         with self.assertRaises(ValueError):
             require_text(" ", "title")
+
+    def test_create_and_list_notes(self) -> None:
+        state = ProjectState()
+        note = create_note(state, " New note ", "Body", ["Work", "work"])
+
+        self.assertEqual(note.title, "New note")
+        self.assertEqual(note.tags, ["work"])
+        self.assertEqual(list_notes(state), [note])
 
 
 if __name__ == "__main__":
